@@ -18,12 +18,21 @@
  */
 
 #include "test_plugin_multiply.h"
+
+// Boost Plugin Loader
 #include <boost_plugin_loader/macros.h>
 
-double boost_plugin_loader::TestPluginMultiply::multiply(double x, double y)
+namespace boost_plugin_loader
+{
+double TestPluginMultiplyImpl::multiply(double x, double y)
 {
   return x * y;
 }
 
+PLUGIN_ANCHOR_IMPL(TestPluginMultiplyImplAnchor)
+
+}  // namespace boost_plugin_loader
+
+// Export the plugin with an alias defined by the target compile definition SYMBOL_NAME
 // NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
-EXPORT_TEST_PLUGIN(boost_plugin_loader::TestPluginMultiply, plugin)
+EXPORT_TEST_PLUGIN_MULTIPLY(boost_plugin_loader::TestPluginMultiplyImpl, SYMBOL_NAME)

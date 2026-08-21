@@ -15,6 +15,7 @@ option(BUILD_SHARED_LIBS "Enables build shared libraries" ON)
 option(ENABLE_CLANG_TIDY "Enables compilation with clang-tidy" OFF)
 option(ENABLE_CODE_COVERAGE "Enables compilation with code coverage" OFF)
 option(BUILD_TESTING "Enables compilation of unit tests" OFF)
+option(BUILD_EXAMPLES "Enables compilation of examples" ON)
 option(ENABLE_RUN_TESTING "Enables running of unit tests as a part of the build" OFF)
 option(ENABLE_CPACK "Enable cpack to generate debian or nuget packages" OFF)
 
@@ -24,6 +25,8 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
 endif()
 
 set(COVERAGE_EXCLUDE
+    /*/install/*
+    /*/devel/*
     /usr/*
     /opt/*
     ${CMAKE_CURRENT_LIST_DIR}/test/*
@@ -39,10 +42,16 @@ target_link_libraries(${PROJECT_NAME} PUBLIC Boost::boost Boost::filesystem ${CM
 target_compile_definitions(${PROJECT_NAME} PUBLIC ${COMPILE_DEFINITIONS})
 target_cxx_version(${PROJECT_NAME} PUBLIC VERSION 17)
 target_clang_tidy(${PROJECT_NAME} ENABLE ${ENABLE_CLANG_TIDY})
-target_code_coverage(${PROJECT_NAME} ALL ENABLE ${ENABLE_CODE_COVERAGE})
+target_code_coverage(
+  ${PROJECT_NAME}
+  PRIVATE
+  ALL
+  ENABLE ${ENABLE_CODE_COVERAGE})
 
 # Build examples
-add_subdirectory(examples)
+if(BUILD_EXAMPLES)
+  add_subdirectory(examples)
+endif()
 
 # Install headers
 install(DIRECTORY include/${PROJECT_NAME}/ DESTINATION include/${PROJECT_NAME})

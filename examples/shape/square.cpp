@@ -16,30 +16,48 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef BOOST_PLUGIN_LOADER_TEST_PLUGIN_SUM_H
-#define BOOST_PLUGIN_LOADER_TEST_PLUGIN_SUM_H
-
-#include "test_plugin.h"
-
-// Boost Plugin Loader
-#include <boost_plugin_loader/macros.h>
+#include "shape.h"
+#include <iostream>
 
 namespace boost_plugin_loader
 {
-class TestPluginMultiplyImpl : public TestPluginMultiply
+/**
+ * @brief Square shape implementation
+ */
+class Square : public Shape
 {
 public:
-  TestPluginMultiplyImpl() = default;
-  ~TestPluginMultiplyImpl() override = default;
-  TestPluginMultiplyImpl(const TestPluginMultiplyImpl&) = default;
-  TestPluginMultiplyImpl& operator=(const TestPluginMultiplyImpl&) = default;
-  TestPluginMultiplyImpl(TestPluginMultiplyImpl&&) = default;
-  TestPluginMultiplyImpl& operator=(TestPluginMultiplyImpl&&) = default;
-  double multiply(double x, double y) override;
+  Square(double w) : width(w)
+  {
+  }
+
+  void operator()() const override
+  {
+    std::cout << "IMPL: Square\n";
+  }
+
+  double area() const override
+  {
+    return width * width;
+  }
+
+protected:
+  double width;
 };
 
-PLUGIN_ANCHOR_DECL(TestPluginMultiplyImplAnchor)
+/**
+ * @brief Square factory plugin implementation
+ */
+class SquareFactory : public ShapeFactory
+{
+  std::shared_ptr<Shape> create(const std::any& params) const override
+  {
+    auto width = std::any_cast<double>(params);
+    return std::make_shared<Square>(width);
+  }
+};
 
 }  // namespace boost_plugin_loader
 
-#endif  // BOOST_PLUGIN_LOADER_TEST_PLUGIN_SUM_H
+// Export the factory as the plugin to allow for multiple differently configured instances of the Square shape
+EXPORT_SHAPE_PLUGIN(boost_plugin_loader::SquareFactory, Square)

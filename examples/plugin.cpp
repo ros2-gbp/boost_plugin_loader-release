@@ -16,8 +16,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "plugin.h"
-#include <boost_plugin_loader/plugin_loader.hpp>
+#include "printer/printer.h"
+#include "shape/shape.h"
+
+// STD
+#include <string>
+
+// Boost Plugin Loader
+#include <boost_plugin_loader/plugin_loader.h>
+#include <boost_plugin_loader/plugin_loader.hpp>  // NOLINT(misc-include-cleaner)
 
 namespace boost_plugin_loader
 {
@@ -29,11 +36,12 @@ std::string Printer::getSection()
 }
 INSTANTIATE_PLUGIN_LOADER(Printer)
 
-// Define the section name for loading plugins of base class `Shape`
+// Define the section name for loading plugins of base class `ShapeFactory`
 // This should match the section name specified in the plugin export macro for this class
-std::string Shape::getSection()
+std::string ShapeFactory::getSection()
 {
   return "shape";
 }
-INSTANTIATE_PLUGIN_LOADER(Shape)
+INSTANTIATE_PLUGIN_LOADER(ShapeFactory)
+
 }  // namespace boost_plugin_loader

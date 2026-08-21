@@ -19,14 +19,17 @@
 #ifndef BOOST_PLUGIN_LOADER_UTILS_H
 #define BOOST_PLUGIN_LOADER_UTILS_H
 
-#include <memory>
+// STD
 #include <string>
 #include <vector>
-#include <set>
+#include <optional>
+
+// Boost
 #include <boost/dll/shared_library.hpp>
 
 namespace boost_plugin_loader
 {
+
 /** @brief The Boost Plugin Loader Exception class */
 class PluginLoaderException : public std::runtime_error
 {
@@ -40,37 +43,23 @@ public:
  * @param library_directory The library directory, if empty it will enable search system directories
  * @return A shared library
  */
-boost::dll::shared_library loadLibrary(const std::string& library_name, const std::string& library_directory = "");
-
-/**
- * @brief Check if the symbol is available in the library_name searching system folders for library
- * @details The symbol name is the alias provide when calling EXPORT_CLASS_SECTIONED
- * @param symbol_name The symbol to create a shared instance of
- * @param library_name The library name to load which does not include the prefix 'lib' or suffix '.so'
- * @param library_directory The library directory, if empty it will enable search system directories
- * @return True if the symbol exists, otherwise false
- */
-bool isSymbolAvailable(const std::string& symbol_name, const std::string& library_name,
-                       const std::string& library_directory = "");
+std::optional<boost::dll::shared_library> loadLibrary(const boost::filesystem::path& library_path);
 
 /**
  * @brief Get a list of available symbols under the provided section
+ * @param library The library to search for available symbols
  * @param section The section to search for available symbols
- * @param library_name The library name to load which does not include the prefix 'lib' or suffix '.so'
- * @param library_directory The library directory, if empty it will enable search system directories
  * @return A list of symbols if they exist.
  */
-std::vector<std::string> getAllAvailableSymbols(const std::string& section, const std::string& library_name,
-                                                const std::string& library_directory = "");
+std::vector<std::string> getAllAvailableSymbols(const boost::dll::shared_library& library, const std::string& section);
 
 /**
  * @brief Get a list of available sections
- * @param library_name The library name to load which does not include the prefix 'lib' or suffix '.so'
- * @param library_directory The library directory, if empty it will enable search system directories
+ * @param library The library to search for available sections
+ * @param include_hidden Indicate if hidden sections should be included
  * @return A list of sections if they exist.
  */
-std::vector<std::string> getAllAvailableSections(const std::string& library_name,
-                                                 const std::string& library_directory = "",
+std::vector<std::string> getAllAvailableSections(const boost::dll::shared_library& library,
                                                  bool include_hidden = false);
 
 /**
@@ -94,7 +83,7 @@ std::string decorate(const std::string& library_name, const std::string& library
  * @param env_variable The environment variable name to extract list from
  * @return A list extracted from variable name
  */
-std::set<std::string> parseEnvironmentVariableList(const std::string& env_variable);
+std::vector<std::string> parseEnvironmentVariableList(const std::string& env_variable);
 
 /**
  * @brief Get all available search paths
@@ -102,8 +91,8 @@ std::set<std::string> parseEnvironmentVariableList(const std::string& env_variab
  * @param existing_search_libraries A list of existing search paths
  * @return A list of search paths
  */
-std::set<std::string> getAllSearchPaths(const std::string& search_paths_env,
-                                        const std::set<std::string>& existing_search_paths);
+std::vector<std::string> getAllSearchPaths(const std::string& search_paths_env,
+                                           const std::vector<std::string>& existing_search_paths);
 
 /**
  * @brief Get all available library names
@@ -111,8 +100,19 @@ std::set<std::string> getAllSearchPaths(const std::string& search_paths_env,
  * @param existing_search_libraries A list of existing library names without the prefix or suffix that contain plugins
  * @return A list of library names without the prefix or suffix that contain plugins
  */
-std::set<std::string> getAllLibraryNames(const std::string& search_libraries_env,
-                                         const std::set<std::string>& existing_search_libraries);
+std::vector<std::string> getAllLibraryNames(const std::string& search_libraries_env,
+                                            const std::vector<std::string>& existing_search_libraries);
+
+/**
+ * @brief Utility function to add library containing symbol to the search env variable
+ *  * In some cases the name and location of a library is unknown at runtime, but a symbol can
+ * be linked at compile time. This is true for Python auditwheel distributions. This
+ * utility function will determine the location of the library, and add it to the library search
+ * environment variable so it can be found.
+ *  * @param symbol_ptr Pointer to the symbol to find
+ * @param search_libraries_env The environmental variable to modify
+ */
+void addSymbolLibraryToSearchLibrariesEnv(const void* symbol_ptr, const std::string& search_libraries_env);
 
 }  // namespace boost_plugin_loader
 

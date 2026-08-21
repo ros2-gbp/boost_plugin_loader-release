@@ -19,11 +19,15 @@
 #ifndef BOOST_PLUGIN_LOADER_PLUGIN_LOADER_H
 #define BOOST_PLUGIN_LOADER_PLUGIN_LOADER_H
 
-#include <set>
-#include <unordered_map>
+// STD
 #include <string>
 #include <memory>
 #include <vector>
+#include <mutex>
+#include <unordered_map>
+
+// Boost
+#include <boost/dll/shared_library.hpp>
 
 /** @brief Macro for explicitly template instantiating a plugin loader for a given base class */
 #define INSTANTIATE_PLUGIN_LOADER(PluginBase)                                                                          \
@@ -32,6 +36,7 @@
 
 namespace boost_plugin_loader
 {
+
 /** @brief Used to test for getSection method for getAvailablePlugins */
 template <typename T>
 struct has_getSection
@@ -70,14 +75,21 @@ struct has_getSection
 class PluginLoader
 {
 public:
+  PluginLoader() = default;
+  ~PluginLoader() = default;
+  inline PluginLoader(const PluginLoader& other);
+  inline PluginLoader& operator=(const PluginLoader& other);
+  inline PluginLoader(PluginLoader&& other) noexcept;
+  inline PluginLoader& operator=(PluginLoader&& other) noexcept;
+
   /** @brief Indicate is system folders may be search if plugin is not found in any of the paths */
   bool search_system_folders{ true };
 
   /** @brief A list of paths to search for plugins */
-  std::set<std::string> search_paths;
+  std::vector<std::string> search_paths;
 
   /** @brief A list of library names without the prefix or suffix that contain plugins*/
-  std::set<std::string> search_libraries;
+  std::vector<std::string> search_libraries;
 
   /** @brief The environment variable containing plugin search paths */
   std::string search_paths_env;
@@ -107,8 +119,7 @@ public:
    * class in order to find all implementations of that plugin interface in the libraries containing plugins.
    */
   template <class PluginBase>
-  typename std::enable_if<has_getSection<PluginBase>::value, std::vector<std::string>>::type
-  getAvailablePlugins() const;
+  typename std::enable_if_t<has_getSection<PluginBase>::value, std::vector<std::string>> getAvailablePlugins() const;
 
   /**
    * @brief Check if plugin is available
@@ -142,21 +153,43 @@ public:
    */
   inline bool empty() const;
 
+  /** @brief Clear the internal cache of loaded plugin libraries */
+  inline void clear();
+
 protected:
+  mutable std::mutex libraries_mutex_;
+  /** @brief Internal cache of loaded plugin libraries, stored by the path from which the library was loaded */
+  mutable std::unordered_map<std::string, boost::dll::shared_library> libraries_;
+
   template <typename PluginBase>
   void reportErrorCommon(std::ostream& msg, const std::string& plugin_name, bool search_system_folders,
-                         const std::set<std::string>& search_paths,
-                         const std::set<std::string>& search_libraries) const;
+                         const std::vector<std::string>& search_paths,
+                         const std::vector<std::string>& search_libraries) const;
 
   template <typename PluginBase>
-  typename std::enable_if<!has_getSection<PluginBase>::value, void>::type
+  typename std::enable_if_t<!has_getSection<PluginBase>::value, void>
   reportError(std::ostream& msg, const std::string& plugin_name, bool search_system_folders,
-              const std::set<std::string>& search_paths, const std::set<std::string>& search_libraries) const;
+              const std::vector<std::string>& search_paths, const std::vector<std::string>& search_libraries) const;
 
   template <typename PluginBase>
-  typename std::enable_if<has_getSection<PluginBase>::value, void>::type
+  typename std::enable_if_t<has_getSection<PluginBase>::value, void>
   reportError(std::ostream& msg, const std::string& plugin_name, bool search_system_folders,
-              const std::set<std::string>& search_paths, const std::set<std::string>& search_libraries) const;
+              const std::vector<std::string>& search_paths, const std::vector<std::string>& search_libraries) const;
+
+  /**
+   * @brief Checks if the library has the input symbol name, given that the plugin class does not define a section name
+   */
+  template <class ClassBase>
+  typename std::enable_if<!has_getSection<ClassBase>::value, bool>::type
+  hasSymbol(const boost::dll::shared_library& lib, const std::string& symbol_name) const;
+
+  /**
+   * @brief Checks that the library has the input symbol name and that the symbol is associated with the section defined
+   * in the plugin class.
+   */
+  template <class ClassBase>
+  typename std::enable_if<has_getSection<ClassBase>::value, bool>::type hasSymbol(const boost::dll::shared_library& lib,
+                                                                                  const std::string& symbol_name) const;
 };
 
 }  // namespace boost_plugin_loader

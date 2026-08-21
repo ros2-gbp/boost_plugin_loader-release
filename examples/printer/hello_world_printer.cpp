@@ -16,30 +16,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef BOOST_PLUGIN_LOADER_TEST_PLUGIN_SUM_H
-#define BOOST_PLUGIN_LOADER_TEST_PLUGIN_SUM_H
-
-#include "test_plugin.h"
-
-// Boost Plugin Loader
-#include <boost_plugin_loader/macros.h>
+#include "printer.h"
+#include <iostream>
 
 namespace boost_plugin_loader
 {
-class TestPluginMultiplyImpl : public TestPluginMultiply
+struct HelloWorldPrinter : public Printer
 {
 public:
-  TestPluginMultiplyImpl() = default;
-  ~TestPluginMultiplyImpl() override = default;
-  TestPluginMultiplyImpl(const TestPluginMultiplyImpl&) = default;
-  TestPluginMultiplyImpl& operator=(const TestPluginMultiplyImpl&) = default;
-  TestPluginMultiplyImpl(TestPluginMultiplyImpl&&) = default;
-  TestPluginMultiplyImpl& operator=(TestPluginMultiplyImpl&&) = default;
-  double multiply(double x, double y) override;
+  void operator()() const override
+  {
+    std::cout << "IMPL: Hello World\n";
+  }
 };
-
-PLUGIN_ANCHOR_DECL(TestPluginMultiplyImplAnchor)
 
 }  // namespace boost_plugin_loader
 
-#endif  // BOOST_PLUGIN_LOADER_TEST_PLUGIN_SUM_H
+EXPORT_PRINTER_PLUGIN(boost_plugin_loader::HelloWorldPrinter, HelloWorldPrinter)

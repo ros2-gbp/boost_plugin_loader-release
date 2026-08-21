@@ -16,30 +16,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef BOOST_PLUGIN_LOADER_TEST_PLUGIN_BASE_H
-#define BOOST_PLUGIN_LOADER_TEST_PLUGIN_BASE_H
-
-#include <string>
+#ifndef BOOST_PLUGIN_LOADER_FWD_H
+#define BOOST_PLUGIN_LOADER_FWD_H
 
 namespace boost_plugin_loader
 {
-class TestPluginBase
-{
-public:
-  virtual ~TestPluginBase() = default;
-  virtual double multiply(double x, double y) = 0;
-  static std::string getSection()
-  {
-    return "TestBase";
-  }
-
-protected:
-  friend class PluginLoader;
-};
-
+class PluginLoader;
 }  // namespace boost_plugin_loader
 
-#include <boost_plugin_loader/macros.h>
-#define EXPORT_TEST_PLUGIN(DERIVED_CLASS, ALIAS) EXPORT_CLASS_SECTIONED(DERIVED_CLASS, ALIAS, TestBase)
-
-#endif  // BOOST_PLUGIN_LOADER_TEST_PLUGIN_BASE_H
+#endif  // BOOST_PLUGIN_LOADER_FWD_H
