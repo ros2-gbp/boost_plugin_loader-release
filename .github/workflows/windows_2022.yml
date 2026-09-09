@@ -19,6 +19,11 @@ env:
     boost-dll boost-filesystem boost-algorithm
     boost-smart-ptr gtest
 
+# Supersede in-progress pull-request runs; queue everything else so two runs on one ref never race.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   windows_ci:
     name: Windows-2022
@@ -55,9 +60,9 @@ jobs:
         echo "CMAKE_PREFIX_PATH=$GITHUB_WORKSPACE\vcpkg\installed\x64-windows-release" >> "$GITHUB_ENV"
 
     - name: Build and Tests
-      uses: tesseract-robotics/colcon-action@v13
+      uses: tesseract-robotics/colcon-action@v15
       with:
-        ccache-prefix: ${{ matrix.distro }}
+        ccache-prefix: windows
         vcs-file: plugin_loader/dependencies.repos
         upstream-args: --cmake-args -G "Ninja" -DVCPKG_TARGET_TRIPLET=x64-windows-release -DCMAKE_BUILD_TYPE=Release
         target-path: workspace/src
