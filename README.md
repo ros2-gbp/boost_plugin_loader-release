@@ -1,3 +1,26 @@
+## boost_plugin_loader (kilted) - 0.4.5-1
+
+The packages in the `boost_plugin_loader` repository were released into the `kilted` distro by running `/usr/bin/bloom-release --rosdistro kilted boost_plugin_loader` on `Wed, 09 Sep 2026 16:26:10 -0000`
+
+The `boost_plugin_loader` package was released.
+
+Version of package(s) in repository `boost_plugin_loader`:
+
+- upstream repository: https://github.com/tesseract-robotics/boost_plugin_loader.git
+- release repository: unknown
+- rosdistro version: `null`
+- old version: `null`
+- new version: `0.4.5-1`
+
+Versions of tools used:
+
+- bloom version: `0.14.3`
+- catkin_pkg version: `1.1.0`
+- rosdep version: `0.26.0`
+- rosdistro version: `1.1.0`
+- vcstools version: `0.1.42`
+
+
 ## boost_plugin_loader (jazzy) - 0.4.5-1
 
 The packages in the `boost_plugin_loader` repository were released into the `jazzy` distro by running `/usr/bin/bloom-release --rosdistro jazzy boost_plugin_loader` on `Wed, 09 Sep 2026 16:23:46 -0000`
