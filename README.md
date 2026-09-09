@@ -1,3 +1,26 @@
+## boost_plugin_loader (rolling) - 0.4.5-1
+
+The packages in the `boost_plugin_loader` repository were released into the `rolling` distro by running `/usr/bin/bloom-release --rosdistro rolling boost_plugin_loader` on `Wed, 09 Sep 2026 16:28:50 -0000`
+
+The `boost_plugin_loader` package was released.
+
+Version of package(s) in repository `boost_plugin_loader`:
+
+- upstream repository: https://github.com/tesseract-robotics/boost_plugin_loader.git
+- release repository: https://github.com/ros2-gbp/boost_plugin_loader-release.git
+- rosdistro version: `0.4.4-1`
+- old version: `0.4.4-1`
+- new version: `0.4.5-1`
+
+Versions of tools used:
+
+- bloom version: `0.14.3`
+- catkin_pkg version: `1.1.0`
+- rosdep version: `0.26.0`
+- rosdistro version: `1.1.0`
+- vcstools version: `0.1.42`
+
+
 ## boost_plugin_loader (lyrical) - 0.4.5-1
 
 The packages in the `boost_plugin_loader` repository were released into the `lyrical` distro by running `/usr/bin/bloom-release --rosdistro lyrical boost_plugin_loader` on `Wed, 09 Sep 2026 16:27:40 -0000`
