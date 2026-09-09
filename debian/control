@@ -1,0 +1,12 @@
+Source: ros-kilted-boost-plugin-loader
+Section: misc
+Priority: optional
+Maintainer: "Levi Armstrong" <levi.armstrong@gmail.com>
+Build-Depends: debhelper (>= 9.0.0), cmake, libboost-filesystem-dev, libgtest-dev <!nocheck>, ros-kilted-ros-industrial-cmake-boilerplate, ros-kilted-ros-workspace
+Homepage: https://index.ros.org/p/boost_plugin_loader/#kilted
+Standards-Version: 3.9.2
+
+Package: ros-kilted-boost-plugin-loader
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libboost-filesystem-dev, libboost-filesystem1.83.0, ros-kilted-ros-workspace
+Description: Boost plugin loader implementation
