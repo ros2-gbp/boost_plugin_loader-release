@@ -1,0 +1,12 @@
+Source: ros-jazzy-boost-plugin-loader
+Section: misc
+Priority: optional
+Maintainer: "Levi Armstrong" <levi.armstrong@gmail.com>
+Build-Depends: debhelper (>= 9.0.0), cmake, libboost-filesystem-dev, libgtest-dev <!nocheck>, ros-jazzy-ros-industrial-cmake-boilerplate, ros-jazzy-ros-workspace
+Homepage: https://index.ros.org/p/boost_plugin_loader/#jazzy
+Standards-Version: 3.9.2
+
+Package: ros-jazzy-boost-plugin-loader
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libboost-filesystem-dev, libboost-filesystem1.74.0, ros-jazzy-ros-workspace
+Description: Boost plugin loader implementation
