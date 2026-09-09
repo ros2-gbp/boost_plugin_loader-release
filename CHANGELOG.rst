@@ -2,6 +2,44 @@
 Changelog for package boost_plugin_loader
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.4.5 (2026-09-09)
+------------------
+* Add plugin library lifetime tokens
+  Add an explicit API for eagerly loading configured plugin libraries and
+  returning independent RAII lifetime tokens.
+  Each token includes the resolved library path for deduplication and retains
+  type-erased shared ownership after the originating PluginLoader is cleared
+  or destroyed.
+  Add unit coverage for token acquisition and ownership persistence.
+* Cancel superseded pull-request CI runs
+  Five workflows trigger on push, pull_request and a daily cron with no
+  concurrency group, so every push to an open PR left the previous run
+  building. Supersede in-progress pull-request runs only; pushes and cron
+  runs still queue so two runs on one ref never race.
+  Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+* Bump colcon-action to v15 on Windows
+  v15 is the first release with Windows ccache support, so this is the
+  only platform gaining caching it never had. The -G "Ninja" already
+  passed in both arg sets is the precondition: the Visual Studio generator
+  ignores CMAKE\_<LANG>_COMPILER_LAUNCHER silently, and the only symptom
+  would be zero cacheable calls.
+  The prefix named matrix.distro, a key this single-leg job never defined,
+  so it expanded to the empty string.
+  Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+* Bump colcon-action to v15 on Linux and macOS
+  ccache has never worked on either platform. The save step never ran, so
+  every run was cold, and the launcher never reached the compiler: on Linux
+  it was passed in a second --cmake-args group, which colcon drops as
+  last-wins; on macOS `if [ ... = "true" ]]` errors and forced the
+  no-launcher branch. That same bracket also skipped rosdep install, so
+  fixing it would newly run rosdep against a package.xml declaring
+  libboost-filesystem-dev, which has no Homebrew mapping and nothing to
+  install there - Boost comes from vcpkg. Disable it on macOS instead.
+  CCACHE_DIR was load-bearing under v14, whose cache path was relative;
+  v15 resolves the directory itself, so drop it.
+  Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+* Contributors: Levi Armstrong, Roelof Oomen
+
 0.4.4 (2026-08-21)
 ------------------
 * Add BUILD_EXAMPLES option
